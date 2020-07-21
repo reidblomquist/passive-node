@@ -2,15 +2,15 @@
 // SYSTEM CONFIGURATION FILE
 // Change the configurations below depending on your specific node setup.
 
-// Run this command to see the REF_VOLTAGE: "espefuse.py --port COM3 adc_info" 
-#define REF_VOLTAGE 1128
-#define CONNECTION_TRY_LIMIT 30 // Number of cycles to try WiFi connection 
-#define MAX_SAVED_READINGS    50 // How many max previous readings to backup
-#define FAILED_JOBS_LIMIT 20 // number of failed jobs to store
+// Run this command to see the REF_VOLTAGE: "espefuse.py --port /dev/cu.usbserial-1440 adc_info" COM3
+#define REF_VOLTAGE 1121
+#define CONNECTION_TRY_LIMIT 10 // Number of cycles to try WiFi connection 
+#define MAX_SAVED_READINGS    20 // How many max previous readings to backup
+#define FAILED_READINGS_LIMIT 50 // number of failed readings to store in memory
 
 //////////////////////////////////////////
 // General Settings
-#define DEVICE_ID      6
+#define DEVICE_ID      3
 
 
 #define BATTERY_MAX   4100 //maximum voltage of bcmdattery 4.2v

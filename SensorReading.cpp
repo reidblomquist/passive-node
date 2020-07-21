@@ -11,7 +11,7 @@ SensorReading::SensorReading(int type)
   this->_value_parsed = 0;
   this->_boot = 1;
 }
-SensorReading::SensorReading(int type, float value)
+SensorReading::SensorReading(int type, int value)
 {
   this->_type = type;
   this->_value = value;
@@ -19,7 +19,7 @@ SensorReading::SensorReading(int type, float value)
   this->_value_parsed = 0;
   this->_boot = 1;
 }
-SensorReading::SensorReading(int type, float value, int source)
+SensorReading::SensorReading(int type, int value, int source)
 {
   this->_type = type;
   this->_value = value;
@@ -27,13 +27,21 @@ SensorReading::SensorReading(int type, float value, int source)
   this->_value_parsed = 0;
   this->_boot = 1;
 }
-SensorReading::SensorReading(int type, float value, int source, float value_parsed)
+SensorReading::SensorReading(int type, int value, int source, float value_parsed)
 {
   this->_type = type;
   this->_value = value;
   this->_source = source;
   this->_value_parsed = value_parsed;
   this->_boot = 1;
+}
+SensorReading::SensorReading(int type, int value, int source, float value_parsed, int boot)
+{
+  this->_type = type;
+  this->_value = value;
+  this->_source = source;
+  this->_value_parsed = value_parsed;
+  this->_boot = boot;
 }
 void SensorReading::display() {
   Serial.println("#####");

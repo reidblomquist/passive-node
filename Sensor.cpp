@@ -35,3 +35,6 @@ SensorReading Sensor::reading() {
   this->last_reading = SensorReading(this->type, this->value, this->source, this->value_parsed);
   return this->last_reading;
 }
+float Sensor::parse() {
+  return this->value_parsed;
+}

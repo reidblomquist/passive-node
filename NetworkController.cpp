@@ -9,12 +9,14 @@
 NetworkController::NetworkController()
 {
   this->readingCount = 0;
+  this->connected = false;
 }
 NetworkController::NetworkController(char* ssid, char* password)
 {
   this->ssid = ssid;
   this->password = password;
   this->readingCount = 0;
+  this->connected = false;
 }
 NetworkController::NetworkController(char* ssid, char* password, char* endpoint)
 {
@@ -22,74 +24,88 @@ NetworkController::NetworkController(char* ssid, char* password, char* endpoint)
   this->password = password;
   this->endpoint = endpoint;
   this->readingCount = 0;
+  this->connected = false;
 }
 bool NetworkController::connect() {
-  int count = 0;
-  int ip_count = 0;
-  // it wil set the static IP address to 192, 168, 1, 184
-  IPAddress null_IP(0, 0, 0, 0);
-  IPAddress ip = null_IP;
-  
-  Serial.print("Connecting to WiFi...");
-  WiFi.begin(ssid, password); 
- // waitForConnectResult() != WL_CONNECTED;
-  while (WiFi.waitForConnectResult() != WL_CONNECTED && ip == null_IP && count < CONNECTION_TRY_LIMIT) { //Check for the connection
-    delay(1000);
-    switch (WiFi.status()) {
-      case WL_CONNECTED:
-        Serial.println("Connection Success");
-        break;
-      case WL_IDLE_STATUS:
-        Serial.println("Idle Waiting Connection");
-        break;
-      case WL_NO_SSID_AVAIL:
-        Serial.println("No SSID Available");
-        break;
-      case WL_SCAN_COMPLETED:
-        Serial.println("Scan Completed");
-        break;
-      case WL_CONNECT_FAILED:
-        Serial.println("Connetion Failed");
-        break;
-      case WL_CONNECTION_LOST:
-        Serial.println("Connetion Lost");
-        break;
-      case WL_DISCONNECTED:
-        Serial.println("Connetion Disconnected");
-        break;
-    }
-    ++count;
+  if (!this->connected) {
     
-    ip = WiFi.localIP();
-    if(count == 1) {
-      Serial.print("Waiting for Connection...");
+    int count = 0;
+    int ip_count = 0;
+    // it wil set the static IP address to 192, 168, 1, 184
+    IPAddress null_IP(0, 0, 0, 0);
+    IPAddress ip = null_IP;
+    
+    Serial.print("Connecting to WiFi...");
+    WiFi.begin(ssid, password); 
+   // waitForConnectResult() != WL_CONNECTED;
+    while (WiFi.waitForConnectResult() != WL_CONNECTED && ip == null_IP && count < CONNECTION_TRY_LIMIT) { //Check for the connection
+      delay(2000);
+      switch (WiFi.status()) {
+        case WL_CONNECTED:
+          Serial.println("Connection Success");
+          break;
+        case WL_IDLE_STATUS:
+          Serial.println("Idle Waiting Connection");
+          break;
+        case WL_NO_SSID_AVAIL:
+          Serial.println("No SSID Available");
+          break;
+        case WL_SCAN_COMPLETED:
+          Serial.println("Scan Completed");
+          break;
+        case WL_CONNECT_FAILED:
+          Serial.println("Connetion Failed");
+          break;
+        case WL_CONNECTION_LOST:
+          Serial.println("Connetion Lost");
+          break;
+        case WL_DISCONNECTED:
+          Serial.println("Connetion Disconnected");
+          break;
+      }
+      ++count;
+      
+      ip = WiFi.localIP();
+      if(count == 1) {
+        Serial.print("Waiting for Connection...");
+      }
+      else {
+  //      Serial.print(".");
+        delay(2000);
+      }
+  
+      if(count % 5 == 0) {
+        Serial.print("Reseting WiFi...");
+        WiFi.disconnect();
+        delay(5000);
+        WiFi.begin(ssid, password); 
+        delay(5000);
+        ip = WiFi.localIP();
+      }
+    }
+    
+    
+   // Check if WiFi was successful 
+    if (WiFi.status() == WL_CONNECTED) {
+      Serial.println("Connected to the WiFi network");
+      Serial.print("IP address: ");
+      Serial.println(WiFi.localIP());
+      this->connected = true;
+      return true;
     }
     else {
-//      Serial.print(".");
+      Serial.println("Failed to Connect to WiFi!");
+      return false;
     }
+  
+  }
+}
 
-    if(count % 10 == 0) {
-      Serial.print("Reseting WiFi...");
-      WiFi.disconnect();
-      delay(2000);
-      WiFi.begin(ssid, password); 
-      delay(1000);
-      ip = WiFi.localIP();
-    }
-  }
-  
-  
- // Check if WiFi was successful 
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.println("Connected to the WiFi network");
-    Serial.print("IP address: ");
-    Serial.println(WiFi.localIP());
-    return true;
-  }
-  else {
-    Serial.println("Failed to Connect to WiFi!");
-    return false;
-  }
+bool NetworkController::disconnect() {
+  WiFi.disconnect(); //Flush WiFi
+  delay(2000);
+  Serial.println(WiFi.status());
+  return true;
 }
 
 bool NetworkController::setup() {
@@ -116,6 +132,7 @@ bool NetworkController::send_data(int bootCount) {
 
     // Try to post the data up to three times
     int httpResponseCode = 0;
+    bool sent_successfully = false;
     while(send_attempts < 3 && httpResponseCode != 200) {
       httpResponseCode = http.POST(requestBody);
       send_attempts++;
@@ -125,21 +142,23 @@ bool NetworkController::send_data(int bootCount) {
         Serial.print("Response: ");
         Serial.println(httpResponseCode);   
         Serial.println(response);
+        sent_successfully = true;
       }
       else {
         Serial.printf("Error occurred while sending HTTP POST: %s\n", http.errorToString(httpResponseCode).c_str());
-        delay(3000);
+        delay(5000);
       }
     
     }
     // Add failed request data to array
-    if(send_attempts > 3 && httpResponseCode != 200) {
+    if(!sent_successfully) {
       Serial.println("Failed to Send to Database!");
       http.end();
       return false;
     }
     
     http.end();
+    
     this->readingCount = 0;
     return true;
      

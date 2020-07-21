@@ -11,6 +11,7 @@ class NetworkController
     NetworkController(char* ssid, char* password);
     NetworkController(char* ssid, char* password, char* endpoint);
     bool connect();
+    bool disconnect();
     bool setup();
     bool send_data(int bootCount);
     DynamicJsonDocument prepare_json(int bootCount);
@@ -20,6 +21,7 @@ class NetworkController
     char* endpoint;
     SensorReading readings[20];
     int readingCount;
+    bool connected;
   private:
     int _id;
 };

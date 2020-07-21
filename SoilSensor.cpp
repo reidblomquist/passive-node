@@ -6,6 +6,8 @@ SoilSensor::SoilSensor()
 {
   this->type = READING_TYPE_SOIL;
   this->source = DEVICE_ID;
+  this->value = 0;
+  this->value_parsed = 0;
 }
 SoilSensor::SoilSensor(byte pin)
 {
@@ -13,6 +15,8 @@ SoilSensor::SoilSensor(byte pin)
   this->analog = true;
   this->type = READING_TYPE_SOIL;
   this->source = DEVICE_ID;
+  this->value = 0;
+  this->value_parsed = 0;
 }
 void SoilSensor::display() {
   Serial.println("#####");

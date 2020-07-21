@@ -10,10 +10,11 @@ class Sensor
     Sensor(byte pin);
     virtual int read();
     virtual void display();
+    virtual float parse();
     SensorReading reading();
     byte pin;
     int type;
-    float value;
+    int value;
     int source;
     float value_parsed;
     bool analog;

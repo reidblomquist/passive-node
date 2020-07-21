@@ -10,6 +10,8 @@ VoltageSensor::VoltageSensor()
   this->battery_max = BATTERY_MAX;
   this->type = READING_TYPE_VOLTAGE;
   this->source = DEVICE_ID;
+  this->value = 0;
+  this->value_parsed = 0.0f;
 }
 VoltageSensor::VoltageSensor(byte pin)
 {
@@ -20,6 +22,8 @@ VoltageSensor::VoltageSensor(byte pin)
   this->battery_max = BATTERY_MAX;
   this->type = READING_TYPE_VOLTAGE;
   this->source = DEVICE_ID;
+  this->value = 0;
+  this->value_parsed = 0.0f;
 }
 VoltageSensor::VoltageSensor(byte pin, esp_adc_cal_characteristics_t *adc_chars)
 {
@@ -31,6 +35,8 @@ VoltageSensor::VoltageSensor(byte pin, esp_adc_cal_characteristics_t *adc_chars)
   this->battery_max = BATTERY_MAX;
   this->type = READING_TYPE_VOLTAGE;
   this->source = DEVICE_ID;
+  this->value = 0;
+  this->value_parsed = 0.0f;
 }
 void VoltageSensor::display() {
   Serial.println("#####");
@@ -61,18 +67,17 @@ int VoltageSensor::read() {
       this->value = this->value / (R2 / (R1 + R2)); //reverse voltage divider
       delay(2000);
   }
+  
   VoltageSensor::parse();
   return this->value;
   
 }
 
 float VoltageSensor::parse() {
-  float percent = 0.0;
-  percent = ((this->value - this->battery_min) / (this->battery_max - this->battery_min)) * 100;
-  percent = roundf(percent * 100) / 100;
-  if (percent > 100) {
-    percent = 100.0f;
+  this->value_parsed = (((float)this->value - (float)this->battery_min) / ((float)this->battery_max - (float)this->battery_min)) * 100;
+  this->value_parsed = roundf(this->value_parsed  * 100) / 100;
+  if (this->value_parsed > 100) {
+    this->value_parsed = 100.0f;
   }
-  this->value_parsed = percent;
-  return percent;
+  return this->value_parsed ;
 }
