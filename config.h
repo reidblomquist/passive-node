@@ -12,9 +12,12 @@ byte soil_sensor_pins[TOTAL_SENSORS_SOIL] = {32, 33};
 #define TOTAL_SENSORS_VOLTAGE  1
 byte voltage_sensor_pins[TOTAL_SENSORS_VOLTAGE] = {36};
 
+
+byte sensor_enable_pin = 25;
+
 // Wifi Settings
-char* ssid = "Infected Network Detected";
-char* password =  "DeaDlyDavisson";
+char* ssid = "";
+char* password =  "";
 char* database_endpoint = "http://192.168.2.217/ajax/sprout.php";
 
 #define TIME_TO_SLEEP  60        /* sleep (in seconds) */

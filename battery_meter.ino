@@ -13,7 +13,7 @@
 #include "deep_sleep.h"
 
 //////////////////////////////////////////
-// Sprout Passive Node Firmware v0.6
+// Sprout Passive Node Firmware v0.6.1
 //////////////////////////////////////////
 // A ESP32 firmware to monitor battery voltage and take sensor readings.
 // The unit is powered off a battery with solar charging and spends most
@@ -147,6 +147,10 @@ void setup() {
   }
 
   
+  // Prepare sensor enable pin
+  pinMode(sensor_enable_pin, OUTPUT);
+  
+  
 
   network = NetworkController(ssid, password, database_endpoint);
   
@@ -197,6 +201,8 @@ void loop() {
     delay(2000);
   }
 
+  // Enable the sensors
+  digitalWrite(sensor_enable_pin, HIGH);
   
   // Sensor Read Loop
   for(byte i = 0; i < TOTAL_SENSORS; i++) {
@@ -219,6 +225,10 @@ void loop() {
     
     delay(500);
   }
+
+  
+  // Disable the sensors
+  digitalWrite(sensor_enable_pin, LOW);
 
   delay(500); // wait for power to stablize
   
